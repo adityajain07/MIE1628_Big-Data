@@ -1,0 +1,85 @@
+#### WORD COUNT ####
+Essentially this task can be divided into two parts 
+
+MAPPER :  
+
+It is fairly straight forword the function of the mapper is to iterate over each 
+
+word and assign a value "1" to it. This is the generation of a key and a value pair which will 
+
+act as the input to the reducer function. 
+
+So finally for the input text (input.txt) which is :
+
+hello hi marry lamb 
+hi hello lamb little
+
+The Output for the mapper function should be :
+
+
+hello	1
+hi	    1
+marry	1
+lamb	1
+hi	    1
+hello	1
+lamb	1
+little	1
+
+<key : hello> <value: 1> will be the input for the reducer, the reducer will read the key value pairs and aggregate 
+
+the number of occurence for each key, and outputs the results to STDOUT.
+
+Output from the REDUCER: 
+
+hello	2
+hi	    2
+lamb	2
+little	1
+marry	1
+
+
+NOTE : Always execute the MapReduce task on your local system before running it on Hadoop platform: 
+
+
+(1) cat input.txt
+(2) cat input.txt |python3 mapper.py
+(3) cat input.txt |python3 mapper.py |sort |python3 reducer.py
+
+
+Now you can implement the WordCount MapReduce task in HDFS. 
+
+
+Advantages of Hadoop Streaming:
+
+* any language written map, reduce program can run on the hadoop cluster
+* any map/reduce program as long as it follows from the standard input stdin read, write out to the standard output stdout.
+* it is easy to debug on a single machine as it follows a pipeline framework
+* provides a rich parameter control for job submission
+
+REQUIRED:  Binary required for hadoop streaming 
+
+/home/hdoop/hadoop-3.2.4/share/hadoop/tools/lib/hadoop-streaming-3.2.4.jar
+
+#######################################################################################
+
+(1) hdfs namenode -format
+
+(2) ./start-dfs.sh
+
+(3) ./start-yarn.sh
+
+(4) bin/hdfs dfs -mkdir -p inputText
+
+(5) bin/hdfs dfs -put /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/LineCount/shakespeare.txt inputText
+
+(6) bin/hadoop jar /Users/adityajain/hadoop/hadoop-3.3.0/share/hadoop/tools/lib/hadoop-streaming-3.3.0.jar -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/LineCount/mapper.py -mapper 'python mapper.py' -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/LineCount/reducer.py -reducer 'python reducer.py' -input inputText -output outLines
+
+(7) bin/hdfs dfs -cat outp/part-00000
+
+
+### Deleting directory
+bin/hdfs dfs -rmdir outLines/
+
+### getting file
+bin/hdfs dfs -get outLines/
