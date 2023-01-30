@@ -33,7 +33,7 @@ def check_convergence():
         centroid_curr = np.array((x_list_curr[i], y_list_curr[i]))
         centroid_prev = np.array((x_list_prev[i], y_list_prev[i]))
         distance      = np.linalg.norm(centroid_curr - centroid_prev) 
-        if distance > 10:
+        if distance > 1:
             print(0)  # not converged
             return 
 

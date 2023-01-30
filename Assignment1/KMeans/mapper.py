@@ -20,7 +20,6 @@ class KmeansBuildCluster:
         self.x_list    = None
         self.y_list    = None
         self.centroids = []
-        self.f_prev    = open('centroids_previous.txt', 'w')
 
         self._read_data()
 
@@ -44,7 +43,8 @@ class KmeansBuildCluster:
 
     def get_random_centroids(self):
         """initializes centroids from the data points"""
-
+        
+        file = open('centroids_previous.txt', 'w')
         for i in range(self.k):
             rand_idx   = random.randint(0, self.n_points-1)
             centroid_x = self.x_list[rand_idx]
@@ -52,19 +52,18 @@ class KmeansBuildCluster:
             self.centroids.append([centroid_x, centroid_y])
 
             output = "%s\t%s\t%s" % (i, centroid_x, centroid_y)
-            self.f_prev.write(output)
-            self.f_prev.write('\n')
-        self.f_prev.close()
+            file.write(output)
+            file.write('\n')
+        file.close()
 
     def get_centroids_from_file(self):
         """reads the centroids from the file"""
 
-        file   = 'centroids_previous.txt'
-        f      = open(file, 'r')
+        f      = open('centroids_previous.txt', 'r')
         for line in f:
             line = line.strip()
             _, centroid_x, centroid_y = line.split('\t')
-            self.centroids.append([centroid_x, centroid_y])
+            self.centroids.append([float(centroid_x), float(centroid_y)])
         f.close()
 
     def create_clusters(self):
