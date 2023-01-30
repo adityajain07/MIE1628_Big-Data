@@ -14,6 +14,8 @@ def calculateNewCentroids():
     output exactly the same format of data as input file except centroid, cluster
     ID have been updated
     '''
+    f = open('centroids_current.txt', 'w')
+
     current_centroid = None
     sum_x = 0
     sum_y = 0
@@ -45,7 +47,10 @@ def calculateNewCentroids():
         else:
             if current_centroid and count!=0:
                 # print the average of every cluster to get new centroids
-                print("%s\t%s\t%s" % (current_centroid, sum_x/count, sum_y/count))
+                output = "%s\t%s\t%s" % (current_centroid, sum_x/count, sum_y/count)
+                f.write(output)
+                f.write('\n')
+                print(output)
 
             current_centroid = cluster_id
             sum_x = x
@@ -54,7 +59,11 @@ def calculateNewCentroids():
     
     # print last cluster's centroids
     if current_centroid == cluster_id and count != 0:
-        print("%s\t%s\t%s" % (cluster_id, sum_x/count, sum_y/count))
+        output = "%s\t%s\t%s" % (current_centroid, sum_x/count, sum_y/count)
+        f.write(output)
+        print(output)
+
+    f.close()
 
 if __name__ == "__main__":
     calculateNewCentroids()

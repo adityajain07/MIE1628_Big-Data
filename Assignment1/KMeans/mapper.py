@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 """mapper.py"""
 
-import sys
-from math import sqrt
 import numpy as np
 import random
+import argparse
 
 class KmeansBuildCluster:
     """mapper function for creating Kmeans cluster"""
-    def __init__(self, filepath, k=3):
+    def __init__(self, args):
         """
         filepath : path to file containing list of datapoints
         k        : number of clusters
         n_points : number of points in the datafile 
         """
     
-        self.filepath  = filepath
-        self.k         = k
+        self.filepath  = args.datafile
+        self.k         = args.num_clusters
         self.n_points  = None
         self.x_list    = None
         self.y_list    = None
         self.centroids = []
+        self.f_prev    = open('centroids_previous.txt', 'w')
 
         self._read_data()
 
@@ -42,14 +42,30 @@ class KmeansBuildCluster:
         self.x_list   = x_list
         self.y_list   = y_list
 
-    def get_centroids(self):
+    def get_random_centroids(self):
         """initializes centroids from the data points"""
 
-        for _ in range(self.k):
+        for i in range(self.k):
             rand_idx   = random.randint(0, self.n_points-1)
             centroid_x = self.x_list[rand_idx]
             centroid_y = self.y_list[rand_idx]
             self.centroids.append([centroid_x, centroid_y])
+
+            output = "%s\t%s\t%s" % (i, centroid_x, centroid_y)
+            self.f_prev.write(output)
+            self.f_prev.write('\n')
+        self.f_prev.close()
+
+    def get_centroids_from_file(self):
+        """reads the centroids from the file"""
+
+        file   = 'centroids_previous.txt'
+        f      = open(file, 'r')
+        for line in f:
+            line = line.strip()
+            _, centroid_x, centroid_y = line.split('\t')
+            self.centroids.append([centroid_x, centroid_y])
+        f.close()
 
     def create_clusters(self):
         """creates clusters based on current centroids"""
@@ -72,8 +88,16 @@ class KmeansBuildCluster:
 
 
 if __name__ == "__main__":
-    datafile = 'data_points.txt'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--initialize', help = 'whether to initalize clusters randomly from the data points', required=True)
+    parser.add_argument('--datafile', help = 'path to the file containing data points', required=True)
+    parser.add_argument('--num_clusters', help = 'number of clusters', type=int, required=True)
+    args   = parser.parse_args()
 
-    kmeans_cluster = KmeansBuildCluster(datafile)
-    kmeans_cluster.get_centroids()
+    kmeans_cluster = KmeansBuildCluster(args)
+    if args.initialize=='random':
+        kmeans_cluster.get_random_centroids()
+    else:
+        kmeans_cluster.get_centroids_from_file()
+
     kmeans_cluster.create_clusters()

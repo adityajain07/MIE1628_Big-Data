@@ -24,5 +24,5 @@ def load_points(filepath):
 
 x_array, y_array = load_points(datafile)
 
-plt.scatter(x_array, y_array)
+plt.scatter(x_array, y_array, s=50, facecolors='none')
 plt.show()
