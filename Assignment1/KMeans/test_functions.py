@@ -25,5 +25,5 @@ def load_points(filepath):
 x_array, y_array = load_points(datafile)
 
 plt.scatter(x_array, y_array)
-plt.scatter([9.95, 50, 25], [15.10, 30.10, 1.78])
+plt.scatter([49.22, 9.8, 10.54, 34.83, 46.79, 50.44], [38.41, 12.86, 21.73, 1.42, 18.9, 29.55])
 plt.show()
