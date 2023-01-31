@@ -9,7 +9,7 @@ while :
 do  
     if [ $i = 1 ]
 	then
-        python mapper.py --initialize random --datafile data_points.txt --num_clusters 6 | sort | python reducer.py    
+        hadoop jar /home/hdoop/hadoop-3.2.4/share/hadoop/tools/lib/hadoop-streaming-3.2.4.jar -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/KMeans/mapper.py -mapper 'python mapper.py --initialize random --datafile data_points.txt --num_clusters 6' -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/KMeans/reducer.py -reducer 'python3 reducer.py' -input inputword -output outp    
 	else
 		python mapper.py --initialize fromfile --datafile data_points.txt --num_clusters 6 | sort | python reducer.py
 	fi
