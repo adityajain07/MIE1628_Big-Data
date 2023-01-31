@@ -3,16 +3,21 @@
 TIMEFORMAT='It took %R seconds to execute the script.'
 time {
 
+hdfs dfs -mkdir -p inputData
+hdfs dfs -put /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/KMeans/data_points.txt inputData
 i=1
 
 while :
 do  
     if [ $i = 1 ]
 	then
-        hadoop jar /home/hdoop/hadoop-3.2.4/share/hadoop/tools/lib/hadoop-streaming-3.2.4.jar -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/KMeans/mapper.py -mapper 'python mapper.py --initialize random --datafile data_points.txt --num_clusters 6' -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/KMeans/reducer.py -reducer 'python3 reducer.py' -input inputword -output outp    
+        hadoop jar /Users/adityajain/hadoop/hadoop-3.3.0/share/hadoop/tools/lib/hadoop-streaming-3.3.0.jar -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/KMeans/mapper.py -mapper 'python mapper.py --initialize random --num_clusters 3' -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/KMeans/reducer.py -reducer 'python reducer.py' -input inputData -output outCentroids    
 	else
-		python mapper.py --initialize fromfile --datafile data_points.txt --num_clusters 6 | sort | python reducer.py
+		hadoop jar /Users/adityajain/hadoop/hadoop-3.3.0/share/hadoop/tools/lib/hadoop-streaming-3.3.0.jar -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/KMeans/mapper.py -mapper 'python mapper.py --initialize fromfile --num_clusters 3' -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/KMeans/reducer.py -reducer 'python reducer.py' -input inputData -output outCentroids
 	fi
+
+	break
+
     convergeflag=$(python check_convergence.py)
     echo "Done with iteration" $i    
 
