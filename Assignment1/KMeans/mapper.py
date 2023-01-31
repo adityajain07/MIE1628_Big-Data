@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """mapper.py"""
 
+import sys
 import numpy as np
 import random
 import argparse
@@ -14,7 +15,6 @@ class KmeansBuildCluster:
         n_points : number of points in the datafile 
         """
     
-        self.filepath  = args.datafile
         self.k         = args.num_clusters
         self.n_points  = None
         self.x_list    = None
@@ -25,17 +25,15 @@ class KmeansBuildCluster:
 
     def _read_data(self):
         """reads data points from the text file"""
-
-        f      = open(self.filepath, 'r')
         x_list = []
         y_list = []
 
-        for line in f:
-            line = line.strip()
-            x, y = line.split(',')
+        # input comes from STDIN
+        for line in sys.stdin:
+            line = line.strip() 
+            x, y = line.split(',')  
             x_list.append(round(float(x), 2))
             y_list.append(round(float(y), 2))
-        f.close()
 
         self.n_points = len(x_list)
         self.x_list   = x_list
@@ -89,7 +87,6 @@ class KmeansBuildCluster:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--initialize', help = 'whether to initalize clusters randomly from the data points', required=True)
-    parser.add_argument('--datafile', help = 'path to the file containing data points', required=True)
     parser.add_argument('--num_clusters', help = 'number of clusters', type=int, required=True)
     args   = parser.parse_args()
 

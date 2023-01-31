@@ -9,9 +9,9 @@ while :
 do  
     if [ $i = 1 ]
 	then
-        python mapper.py --initialize random --datafile data_points.txt --num_clusters 6 | sort | python reducer.py    
+        cat data_points.txt | python mapper.py --initialize random --num_clusters 3 | sort | python reducer.py    
 	else
-		python mapper.py --initialize fromfile --datafile data_points.txt --num_clusters 6 | sort | python reducer.py
+		cat data_points.txt | python mapper.py --initialize fromfile --num_clusters 3 | sort | python reducer.py
 	fi
     convergeflag=$(python check_convergence.py)
     echo "Done with iteration" $i    
