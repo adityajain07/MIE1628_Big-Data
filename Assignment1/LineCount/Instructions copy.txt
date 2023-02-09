@@ -75,7 +75,7 @@ REQUIRED:  Binary required for hadoop streaming
 
 (6) bin/hadoop jar /Users/adityajain/hadoop/hadoop-3.3.0/share/hadoop/tools/lib/hadoop-streaming-3.3.0.jar -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/LineCount/mapper.py -mapper 'python mapper.py' -file /Users/adityajain/Dropbox/UofT_Studies/MIE1628/Assignment1/LineCount/reducer.py -reducer 'python reducer.py' -input inputText -output outLines
 
-(7) bin/hdfs dfs -cat outp/part-00000
+(7) bin/hdfs dfs -cat outLines/part-00000
 
 
 ### Deleting directory
@@ -83,3 +83,9 @@ bin/hdfs dfs -rmdir outLines/
 
 ### getting file
 bin/hdfs dfs -get outLines/
+
+### starting Hadoop
+./start-dfs.sh && ./start-yarn.sh
+
+### stopping Hadoop
+./stop-dfs.sh && ./stop-yarn.sh
