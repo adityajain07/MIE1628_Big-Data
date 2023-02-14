@@ -17,16 +17,16 @@ ratingsRDD = rdd_orig.map(lambda p: Row(userId=int(p[2]), movieId=int(p[0]),
 train_split      = 0.8
 test_split       = 0.2
 ratings          = spark.createDataFrame(ratingsRDD)
-(training, test) = ratings.randomSplit([train_split, test_split])
+(training, test) = ratings.randomSplit([train_split, test_split], seed=1234)
 
 # instantiating model 
 als   = ALS(userCol="userId", itemCol="movieId", ratingCol="rating", coldStartStrategy="drop")
 
 # # hyperparameter search
 parameters=ParamGridBuilder() \
-                .addGrid(als.maxIter, [5]) \
-                .addGrid(als.rank, [3]) \
-                .addGrid(als.regParam, [1]) \
+                .addGrid(als.maxIter, [5, 10, 15]) \
+                .addGrid(als.rank, [3, 6, 10, 14]) \
+                .addGrid(als.regParam, [0.1, 0.5, 2, 4]) \
                 .build()
                 
 
@@ -34,23 +34,19 @@ parameters=ParamGridBuilder() \
 evaluator   = RegressionEvaluator(metricName="rmse", labelCol="rating",
                                 predictionCol="prediction")
 
-# build train, validation split
-trainvs = TrainValidationSplit(
-                estimator=als,
-                estimatorParamMaps=parameters,
-                evaluator=evaluator
-                )
-# cv = CrossValidator(
-#         estimator=als,
-#         estimatorParamMaps=parameters, 
-#         evaluator=evaluator,
-#         parallelism=2)
+
+# do cross-validation          
+cv = CrossValidator(
+        estimator=als,
+        estimatorParamMaps=parameters, 
+        evaluator=evaluator,
+        parallelism=2)
 
 # fit model on to training data and evaluate using validation data
-model = trainvs.fit(training)
-# model = cv.fit(training)
+model = cv.fit(training)
 best_model = model.bestModel
 model_path = 'rec-model-v01/'
+
 print("**Best Model**")
 # Print "Rank"
 print("  Rank:", best_model._java_obj.parent().getRank())
@@ -60,12 +56,10 @@ print("  MaxIter:", best_model._java_obj.parent().getMaxIter())
 print("  RegParam:", best_model._java_obj.parent().getRegParam())
 model.write().overwrite().save(model_path)
 
-# print('The validation metrics are: ', model.validationMetrics)
-
 # evaluate on the test test
 predictions = model.transform(test)
 rmse = evaluator.evaluate(predictions)
 
-print(f'Root mean squared error (RMSE) is {round(rmse, 2)}')
+print(f'The least root mean squared error (RMSE) is {round(rmse, 2)}')
 
 
